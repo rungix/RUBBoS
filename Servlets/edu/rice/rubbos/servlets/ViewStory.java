@@ -152,6 +152,8 @@ public class ViewStory extends RubbosHttpServlet
     ResultSet         rs = null, count_result = null;
     String            comment_table = null;
     String            storyIdtest = request.getParameter("storyId");
+    int filter = 0;
+	int display = 1;
 
     sp = new ServletPrinter(response, "ViewStory");
 
@@ -164,6 +166,14 @@ public class ViewStory extends RubbosHttpServlet
     if (storyIdtest != null)
     {
       storyId = (Integer.valueOf(request.getParameter("storyId"))).intValue();
+    }
+    if (request.getParameter("filter") != null)
+    {
+      filter = (Integer.valueOf(request.getParameter("filter"))).intValue();
+    }
+    if (request.getParameter("display") != null)
+    {
+      display = (Integer.valueOf(request.getParameter("display"))).intValue();
     }
 
     conn = getConnection();
@@ -239,7 +249,6 @@ public class ViewStory extends RubbosHttpServlet
 
     int i = -1, rating;
     String count;
-    int filter, display;
 
     try
     {
@@ -253,7 +262,6 @@ public class ViewStory extends RubbosHttpServlet
       {
         rating = count_result.getInt("rating");
         count = count_result.getString("count");
-        filter = 0;
         while ((i < 6) && (rating != i))
         {
           if (i == filter)
@@ -295,8 +303,6 @@ public class ViewStory extends RubbosHttpServlet
             + "<OPTION selected value=\"1\">Nested</OPTION>\n"
             + "<OPTION value=\"2\">All comments</OPTION>\n"
             + "</SELECT>&nbsp&nbsp&nbsp&nbsp<input type=submit value=\"Refresh display\"></center><p>\n");
-    display = 1;
-    filter = 0;
 
     try
     {
