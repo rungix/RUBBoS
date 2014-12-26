@@ -113,7 +113,7 @@ public class BrowseCategories extends RubbosHttpServlet
             .printHTMLHighlighted("<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.BrowseStoriesByCategory?category="
                 + categoryId
                 + "&categoryName="
-                + URLEncoder.encode(categoryName)
+                + URLEncoder.encode(categoryName, "UTF-8")
                 + "\">"
                 + categoryName
                 + "</a><br>\n");
