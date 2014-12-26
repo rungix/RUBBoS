@@ -201,7 +201,7 @@ public class Search extends RubbosHttpServlet
                       + search + "</i>.</h2><br>\n");
               sp
                   .printHTML("<p><CENTER>\n<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?search="
-                      + URLEncoder.encode(search)
+                      + URLEncoder.encode(search, "UTF-8")
                       + "&type="
                       + type
                       + "&page="
@@ -261,7 +261,7 @@ public class Search extends RubbosHttpServlet
                       + search + "</i>.</h2><br>\n");
               sp
                   .printHTML("<p><CENTER>\n<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?search="
-                      + URLEncoder.encode(search)
+                      + URLEncoder.encode(search, "UTF-8")
                       + "&type="
                       + type
                       + "&page="
@@ -352,7 +352,7 @@ public class Search extends RubbosHttpServlet
                   .printHTML("<h2>Sorry, but there are no more stories available with author matching <i>$search</i>.</h2><br>\n");
               sp
                   .printHTML("<p><CENTER>\n<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?search="
-                      + URLEncoder.encode(search)
+                      + URLEncoder.encode(search, "UTF-8")
                       + "&type="
                       + type
                       + "&page="
@@ -404,7 +404,7 @@ public class Search extends RubbosHttpServlet
         if (page == 0)
           sp
               .printHTML("<p><CENTER>\n<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?search="
-                  + URLEncoder.encode(search)
+                  + URLEncoder.encode(search, "UTF-8")
                   + "&type="
                   + type
                   + "&page="
@@ -415,7 +415,7 @@ public class Search extends RubbosHttpServlet
         else
           sp
               .printHTML("<p><CENTER>\n<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?search="
-                  + URLEncoder.encode(search)
+                  + URLEncoder.encode(search, "UTF-8")
                   + "&type="
                   + type
                   + "&page="
@@ -426,7 +426,7 @@ public class Search extends RubbosHttpServlet
                   + "<a href=\"/rubbos/servlet/edu.rice.rubbos.servlets.Search?category="
                   + search
                   + "="
-                  + URLEncoder.encode(search)
+                  + URLEncoder.encode(search, "UTF-8")
                   + "&type="
                   + type
                   + "&page="
