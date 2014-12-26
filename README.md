@@ -35,20 +35,27 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
 
 1. Login to your Web server machine:
 2. Get the RUBBoS project:
+
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
     ```
+
 3. Copy the PHP sources to the *server root* directory `$SERVER_ROOT` of your Web server (e.g., `$SERVER_ROOT` may be `/var/www`):
+
     ```shell
     $ mkdir -p $SERVER_ROOT/rubbos
     $ cp -r RUBBoS/php $SERVER_ROOT/rubbos/PHP
     ```
+
 4. Edit the `$SERVER_ROOT/rubbos/PHP/PHPprinter.php` file to set the host name or IP `$BACKEND_HOST` of the machine where your DBMS is running, and the user name `$DB_USER` (e.g., `rubbos`) and password `$DB_PASSWORD` (e.g., `rubbos`) to access to the RUBBoS database, that is:
+
     ```php
     $link = mysql_pconnect("$BACKEND_IP", "$DB_USER", "$DB_PASSWORD") or die ("ERROR: Could not connect to database");
     ```
+
 5. Update the configuration of your Web server to set `$SERVER_ROOT/rubbos/PHP` as the Web server *document root* (e.g., for the Apache Web Server, this is the `DocumentRoot` property in the `httpd.conf` file).
 6. Update your PHP property file `$PHP_INI` (e.g., `$PHP_INI` may be `/etc/php.ini`). Typical settings include:
+
     ```
     ;upload_max_filesize = 2M
     short_open_tag = On
@@ -59,33 +66,42 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
     session.bug_compat_42 = On
     session.bug_compat_warn = On
     ```
+
 7. Reboot
 
 ### Java Servlets Incarnation
 
 1. Login to your Web server machine:
 2. Get the RUBBoS project and move to the *servlets* incarnation directory:
+
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
     $ cd RUBBoS/servlets
     ```
+
 3. Edit configuration files:
     - Edit the `../user.properties` file to set the property `j2ee.home` to the path where there are the J2EE jars (e.g., for Apache Tomcat this is the path to the `tomcat-servlet-api.jar` file).
     - Edit the `./src/conf/mysql.properties` file to set the host name or IP `$BACKEND_HOST` of the machine where your DBMS is running, and the user name `$DB_USER` (e.g., `rubbos`) and password `$DB_PASSWORD` (e.g., `rubbos`) to access to the RUBBoS database, that is:
+
         ```
         datasource.url          jdbc:mysql://$BACKEND_HOST/rubbos
         datasource.username     $DB_USER
         datasource.password     $DB_PASSWORD
         ```
+
     - Edit the `./src/java/edu/rice/rubbos/servlets/Config.java` to set the path to HTML files `$HTML_PATH` (e.g., `/usr/share/tomcat/webapps/rubbos`) and the path to the database property file `$DB_PROPERTY_FILE` (e.g., `/usr/share/tomcat/webapps/rubbos`), that is:
-    ```java
-    public static final String HTMLFilesPath                 = "/home/margueri/RUBBoS/Servlet_HTML";
-    public static final String DatabaseProperties            = "/home/margueri/RUBBoS/Servlets/mysql.properties";
-    ```
+
+        ```java
+        public static final String HTMLFilesPath      = "/home/margueri/RUBBoS/Servlet_HTML";
+        public static final String DatabaseProperties = "/home/margueri/RUBBoS/Servlets/mysql.properties";
+        ```
+
 4. Build the war file:
+
     ```shell
     $ ant
     ```
+
 5. Reboot
 
 
