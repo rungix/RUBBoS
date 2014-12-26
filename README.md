@@ -1,40 +1,114 @@
-The RUBBoS bulletin board benchmark was originally developed by the JMOB project. The homepage of the original implementation can be found [here](http://jmob.ow2.org/rubbos.html). While the benchmark is well-implemented, no updates have been made since 2005. This has caused some incompatibilities with newer versions of the software which RUBBoS depends on. This repository provides some updates to resolve these incompatibilities. For any questions, contact Michael Mior at <michael.mior@gmail.com>.
+RUBBoS
+------
+
+## Overview
+
+RUBBoS is a bulletin board benchmark modeled after an online news forum like [Slashdot](http://slashdot.org).
+
+RUBBoS implements the essential bulletin board features of the Slashdot site.
+In particular, as in Slashdot, it supports discussion threads.
+A discussion thread is a logical tree, containing a story at its root and a number of comments for that story, which may be nested.
+Users have two different levels of authorized access: regular user and moderator.
+Regular users browse and submit stories and comments.
+Moderators in addition review stories and rate comments.
+
+RUBBoS is a free, open source initiative available at the [OW2 Consortium](http://jmob.ow2.org/rubbos.html) web site.
+
+## Incarnations
+
+The [OW2 RUBBoS](http://rubbos.ow2.org) web site offers several implementations of the RUBBoS benchmark, that use three different technologies: *PHP*, *Java servlets* and *Enterprise Java Bean* (EJB).
+
+In *PHP* and *Java servlets*, the application programmer is responsible for writing the SQL queries.
+An *EJB* server provides a number of services such as database access (JDBC), transactions (JTA), messaging (JMS), naming (JNDI) and management support (JMX).
+The EJB server manages one or more EJB containers.
+The container is responsible for providing component pooling and lifecycle management, client session management, database connection pooling, persistence, transaction management, authentication and access control.
+EJB containers automatically manage bean persistence, relieving the programmer of writing SQL code.
+
+Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBoS.
 
 
-Installation
-============
-Only the PHP version of this benchmark is being maintained in this codebase. To install, simply copy the `PHP` directory somewhere into the path of an Apache web server with PHP support. The absolute path of this directory should be specified as `php_html_path` and `php_script_path` in any `rubbos.properties` files used to run the benchmark.
+## Installation
 
-To build the client emulator, change into the `Client` directory and run `make`. This will create `rubbos_client.jar` which will be used to run the benchmark.
+### Frontend
 
-Database setup
-==============
-The PHP version of the benchmark requires the MySQL database server (or some server which speaks MySQL). No specific MySQL features are used, so any version of MySQL should suffice. To create the database schema, execute `database/rubbos.sql`. To load the initial data for the benchmark, data files must be downloaded from the [JMOB website](http://jmob.ow2.org/rubbos/smallDB.tgz). Then, `database/load.sql` in this repository must be updated with the path to these files, then executed to complete the loading.
+#### PHP Incarnation
 
-Running the benchmark
-=====================
+1. Login to your Web server machine:
+2. Get the RUBBoS project:
+    ```shell
+    $ git clone https://github.com/sguazt/RUBBoS.git
+    ```
+3. Copy the PHP sources to the *server root* directory `$SERVER_ROOT` of your Web server (e.g., `$SERVER_ROOT` may be `/var/www`):
+    ```shell
+    $ mkdir -p $SERVER_ROOT/rubbos
+    $ cp -r RUBBoS/php $SERVER_ROOT/rubbos/PHP
+    ```
+4. Edit the `$SERVER_ROOT/rubbos/PHP/PHPprinter.php` file to set the host name or IP `$BACKEND_HOST` of the machine where your DBMS is running, and the user name `$DB_USER` (e.g., `rubbos`) and password `$DB_PASSWORD` (e.g., `rubbos`) to access to the RUBBoS database, that is:
+    ```php
+    $link = mysql_pconnect("$BACKEND_IP", "$DB_USER", "$DB_PASSWORD") or die ("ERROR: Could not connect to database");
+    ```
+5. Update the configuration of your Web server to set `$SERVER_ROOT/rubbos/PHP` as the Web server *document root* (e.g., for the Apache Web Server, this is the `DocumentRoot` property in the `httpd.conf` file).
+6. Update your PHP property file `$PHP_INI` (e.g., `$PHP_INI` may be `/etc/php.ini`). Typical settings include:
+    ```
+    ;upload_max_filesize = 2M
+    short_open_tag = On
+    date.timezone = UTC
+    ; The following changes are useful for debugging purpose
+    track_errors = On
+    display_errors = On
+    session.bug_compat_42 = On
+    session.bug_compat_warn = On
+    ```
+7. Reboot
 
-First, complete the installation procedure to set up the web application and compile the client software. The initial database must then be loaded.
+### Java Servlets Incarnation
 
-A `rubbos.properties` file must now be prepared with all parameters required to run the benchmark. Samples are given in the `bench` subdirectory. The most important configuration options are the hostnames of the database and web servers and the remote client nodes. `workload_remote_client_command` should be updated with the version of Java which should be used. You may find that connection to remote clients may only work with `monitoring_rsh` will only work with `/usr/bin/ssh`.
+1. Login to your Web server machine:
+2. Get the RUBBoS project and move to the *servlets* incarnation directory:
+    ```shell
+    $ git clone https://github.com/sguazt/RUBBoS.git
+    $ cd RUBBoS/servlets
+    ```
+3. Edit configuration files:
+    - Edit the `../user.properties` file to set the property `j2ee.home` to the path where there are the J2EE jars (e.g., for Apache Tomcat this is the path to the `tomcat-servlet-api.jar` file).
+    - Edit the `./src/conf/mysql.properties` file to set the host name or IP `$BACKEND_HOST` of the machine where your DBMS is running, and the user name `$DB_USER` (e.g., `rubbos`) and password `$DB_PASSWORD` (e.g., `rubbos`) to access to the RUBBoS database, that is:
+        ```
+        datasource.url          jdbc:mysql://$BACKEND_HOST/rubbos
+        datasource.username     $DB_USER
+        datasource.password     $DB_PASSWORD
+        ```
+    - Edit the `./src/java/edu/rice/rubbos/servlets/Config.java` to set the path to HTML files `$HTML_PATH` (e.g., `/usr/share/tomcat/webapps/rubbos`) and the path to the database property file `$DB_PROPERTY_FILE` (e.g., `/usr/share/tomcat/webapps/rubbos`), that is:
+    ```java
+    public static final String HTMLFilesPath                 = "/home/margueri/RUBBoS/Servlet_HTML";
+    public static final String DatabaseProperties            = "/home/margueri/RUBBoS/Servlets/mysql.properties";
+    ```
+4. Build the war file:
+    ```shell
+    $ ant
+    ```
+5. Reboot
 
-Each remote client will require installations of Java and sysstat. These machines will also require a copy of the client emulator. The easiest method is to simply copy the entire repository onto each machine. A script such as the one below should suffice. Each remote client will need to allow the host running the benchmark access without password.
 
-    #!/bin/bash
-    
-    # Add all remote client nodes as array elements below
-    hosts=()
-    
-    for host in ${hosts[@]}; do
-        ssh $host rm -rf RUBBoS
-        scp -rq RUBBoS $host:
-    done
+# Credits and Disclaimer
 
-To produce graphs of the data, the main client will require gnuplot. The simplest way to change the amount of load generated is to change the number of remote clients as well as `workload_number_of_clients_per_node`. Finally, `workload_user_transition_table` and `workload_author_transition_table` can be set to the defaults found in the `workload` subdirectory.
+The RUBBoS bulletin board benchmark was originally developed by *Emmanuel Cecchet* and *Julie Marguerite* at *Rice University* under the *DynaServer* project.
+Then, it became part of the [OW2 JMOB](http://jmob.ow2.org) where it is currently available at [this page](http://jmob.ow2.org/rubbos.html).
+The last release of the OW2 RUBBoS is version 1.2.2, which dates back to October 2004 (see [here](http://forge.ow2.org/projects/rubbos/rubbos/)).
 
-To execute the benchmark, change into the repository directory and run `make emulator`. Extensive HTML output will be generated in a subfolder of `bench`.
+While the benchmark is well-implemented, no updates have been made since 2005.
+This has caused some incompatibilities with newer versions of the software which RUBBoS depends on.
 
-License
-=======
+Recently, to cope with these issues, *Michael Mior* created a [Github project](https://github.com/michaelmior/RUBBoS) for the OW2 RUBBoS 1.2.2.
+The Michael's repository provides some updates to resolve these incompatibilities.
 
-The RUBBoS benchmark is licensed under the [LGPL](http://www.gnu.org/licenses/lgpl.html).
+I begun contributing to RUBBoS by forking the Micheal's repository and issuing some pull requests for patches and improvements.
+As of December 2014, Michael seems out of time for maintaining its RUBBoS repository, as [he announces that](https://github.com/michaelmior/RUBBoS/blob/master/CONTRIBUTING.md):
+
+> it is unlikely that I will have the time to test and accept any major changes
+
+So, I decided to stop working to the forked project (still available [here](https://github.com/sguazt/RUBBoS_fork_of_michaelmior) for logging purpose) and I started this new Github project which includes all the work done in the Michael's repository until December 26th, 2014.
+
+Please, note that I'm going to use RUBBoS for research purpose and for a limited time only.
+So, don't expect frequent updates and quick feedback.
+
+Anyway, if you like it you are invited to contribute.
