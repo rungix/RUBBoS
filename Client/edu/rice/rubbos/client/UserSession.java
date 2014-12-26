@@ -236,7 +236,7 @@ public class UserSession extends Thread
    * @param skipFirst true if the first occurence of key must be ignored
    * @return new lastIndex value
    */
-  private int[] randomComputeLastIndex(String key, boolean skipFirst)
+  private int[] randomComputeLastIndex(String key, boolean skipFirst, boolean skipLast)
   {
     int count = 0;
     int keyIndex = lastHTMLReply.indexOf(key);
@@ -246,7 +246,7 @@ public class UserSession extends Thread
       count++;
       keyIndex = lastHTMLReply.indexOf(key, keyIndex+key.length());
     }
-    if ((count == 0) || (skipFirst && (count <= 1)))
+	if ((count == 0) || (skipFirst && (count == 1)) || (skipLast && ((count == 1) || (skipFirst && (count == 2)))))
     {
       if (debugLevel>0)
         System.err.println("Thread "+this.getName()+": Cannot find "+key+" in last HTML reply<br>");
@@ -260,13 +260,17 @@ public class UserSession extends Thread
     count = rand.nextInt(count)+1;
     if ((skipFirst) && (count == 1))
       count++; // Force to skip the first element
+	if (skipLast)
+	{
+		--count; // Force to skip the last element
+	}
     while (count > 0)
     {
       keyIndex = lastHTMLReply.indexOf(key, keyIndex+key.length());
       count--;
     }
     keyIndex += key.length();
-    int lastIndex = isMin(Integer.MAX_VALUE, lastHTMLReply.indexOf('\"', keyIndex));
+    int lastIndex = lastHTMLReply.indexOf('\"', keyIndex);
     lastIndex = isMin(lastIndex, lastHTMLReply.indexOf('?', keyIndex));
     lastIndex = isMin(lastIndex, lastHTMLReply.indexOf('&', keyIndex));
     lastIndex = isMin(lastIndex, lastHTMLReply.indexOf('>', keyIndex));
@@ -293,7 +297,7 @@ public class UserSession extends Thread
     }
 
     // Choose randomly a story
-    int[] pos = randomComputeLastIndex("storyId=", false);
+    int[] pos = randomComputeLastIndex("storyId=", false, false);
     if (pos == null)
       return lastStoryId;
     Integer foo = new Integer(lastHTMLReply.substring(pos[0], pos[1]));
@@ -318,7 +322,7 @@ public class UserSession extends Thread
     }
 
     // Choose randomly a category
-    int[] pos = randomComputeLastIndex("category=", false);
+    int[] pos = randomComputeLastIndex("category=", false, false);
     if (pos == null)
       return null;
     Integer categoryId = new Integer(lastHTMLReply.substring(pos[0], pos[1]));
@@ -347,7 +351,7 @@ public class UserSession extends Thread
       return null;
     }
 
-    int[] pos = randomComputeLastIndex(scriptName, false);
+    int[] pos = randomComputeLastIndex(scriptName, false, true);
     if (pos == null)
       return null;
 
@@ -391,7 +395,7 @@ public class UserSession extends Thread
     }
     // The boolean is true because we do not want to pick the first ViewComment
     // which is used for redisplaying stories
-    int[] pos = randomComputeLastIndex(scriptName, true);
+    int[] pos = randomComputeLastIndex(scriptName, true, true);
     if (pos == null)
       return null;
 
@@ -447,7 +451,7 @@ public class UserSession extends Thread
       return null;
     }
 
-    int[] pos = randomComputeLastIndex(scriptName, false);
+    int[] pos = randomComputeLastIndex(scriptName, false, true);
     if (pos == null)
       return null;
 
@@ -488,7 +492,7 @@ public class UserSession extends Thread
       return null;
     }
 
-    int[] pos = randomComputeLastIndex(scriptName, false);
+    int[] pos = randomComputeLastIndex(scriptName, false, true);
     if (pos == null)
       return null;
 
@@ -760,7 +764,7 @@ public class UserSession extends Thread
           body += randomWordFromDictionary(true);
         while ((body != null) && (body.length() < size));
 
-        int[] pos = randomComputeLastIndex("name=comment_table value=", false);
+        int[] pos = randomComputeLastIndex("name=comment_table value=", false, false);
         if (pos == null)
           return null;
         String comment_table = lastHTMLReply.substring(pos[0], pos[1]);
@@ -805,7 +809,7 @@ public class UserSession extends Thread
       {
         int rating = rand.nextInt(2)-1; // random value between -1 and 1
 
-        int[] pos = randomComputeLastIndex("name=comment_table value=", false);
+        int[] pos = randomComputeLastIndex("name=comment_table value=", false, false);
         if (pos == null)
           return null;
         String comment_table = lastHTMLReply.substring(pos[0], pos[1]);
@@ -829,7 +833,7 @@ public class UserSession extends Thread
           body += randomWordFromDictionary(true);
         while ((body != null) && (body.length() < size));
 
-        int[] pos = randomComputeLastIndex("OPTION value=\"", false);
+        int[] pos = randomComputeLastIndex("OPTION value=\"", false, false);
         if (pos == null)
           return null;
         Integer categoryId = new Integer(lastHTMLReply.substring(pos[0], pos[1]));
