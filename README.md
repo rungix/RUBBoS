@@ -29,11 +29,18 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
 
 ## Installation
 
-### Frontend
+### Frontend Installation
+
+By *frontend*, we mean the machine where the Web server is running.
+In the following, we don't provide instructions to install a Web server.
+To do so, please refer to the user documentation of your Web server.
 
 #### PHP Incarnation
 
+In the following, we assume that you use the *Apache Web server* and that a working installation is already installed on your system.
+
 1. Login to your Web server machine:
+
 2. Get the RUBBoS project:
 
     ```shell
@@ -53,7 +60,12 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
     $link = mysql_pconnect("$BACKEND_IP", "$DB_USER", "$DB_PASSWORD") or die ("ERROR: Could not connect to database");
     ```
 
-5. Update the configuration of your Web server to set `$SERVER_ROOT/rubbos/PHP` as the Web server *document root* (e.g., for the Apache Web Server, this is the `DocumentRoot` property in the `httpd.conf` file).
+5. Edit the Apache Web server `httpd.conf` file (typically located under `/etc/httpd/conf` directory) to set `$SERVER_ROOT/rubbos/PHP` as its `DocumentRoot`.
+
+    ```
+    DocumentRoot $SERVER_ROOT/rubbos/PHP
+    ```
+
 6. Update your PHP property file `$PHP_INI` (e.g., `$PHP_INI` may be `/etc/php.ini`). Typical settings include:
 
     ```
@@ -71,7 +83,10 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
 
 ### Java Servlets Incarnation
 
+In the following, we assume that you use the *Apache Tomcat* J2EE container and that a working installation is already installed on your system.
+
 1. Login to your Web server machine:
+
 2. Get the RUBBoS project and move to the *servlets* incarnation directory:
 
     ```shell
@@ -89,25 +104,46 @@ Currently, we focus only the *PHP* and a *Java Servlets* implementation of RUBBo
         datasource.password     $DB_PASSWORD
         ```
 
-    - Edit the `./src/java/edu/rice/rubbos/servlets/Config.java` to set the path to HTML files `$HTML_PATH` (e.g., `/usr/share/tomcat/webapps/rubbos`) and the path to the database property file `$DB_PROPERTY_FILE` (e.g., `/usr/share/tomcat/webapps/rubbos`), that is:
+    - Edit the `./src/java/edu/rice/rubbos/servlets/Config.java` to edit the path to HTML files and the path to the database property file. Specifically, in the following, you need to replace  `/usr/share/tomcat/` prefix with the server root of your Apache Tomcat installation:
 
         ```java
-        public static final String HTMLFilesPath      = "/home/margueri/RUBBoS/Servlet_HTML";
-        public static final String DatabaseProperties = "/home/margueri/RUBBoS/Servlets/mysql.properties";
+        public static final String HTMLFilesPath      = "/usr/share/tomcat/webapps/rubbos";
+        public static final String DatabaseProperties = "/usr/share/tomcat/webapps/rubbos/WEB-INF/classes/META-INF/mysql.properties";
         ```
 
-4. Build the war file:
+4. Build the `rubbos.war` war file:
 
     ```shell
-    $ ant
+    $ ant clean build
     ```
 
-5. Reboot
+5. Deploy the `rubbos.war` war into your J2EE container (e.g., in case of Apache Tomcat, copy `dist/rubbos.war` into the `webapps` sub-directory located under the Apache Tomcat root directory, like `/usr/share/tomcat/webapps`).
 
+6. Restart your J2EE container.
 
-# Credits and Disclaimer
+### Backend Installation
 
-The RUBBoS bulletin board benchmark was originally developed by *Emmanuel Cecchet* and *Julie Marguerite* at *Rice University* under the *DynaServer* project.
+By *backend*, we mean the machine where the DBMS server is running.
+In the following guide, we asssume you use the MySQL server as the DBMS server.
+
+1. Login to your DBMS server machine:
+
+2. Get the RUBBoS project:
+
+    ```shell
+    $ git clone https://github.com/sguazt/RUBBoS.git
+    ```
+
+3. Create the `rubbos` database schema
+
+    ```shell
+    $ cd RUBBoS
+    $ mysql -uroot rubbos < database/rubbos.sql
+    ```
+
+## Credits and Disclaimer
+
+The RUBBoS bulletin board benchmark was originally developed by *Emmanuel Cecchet* and *Julie Marguerite* at *Rice University*/*INRIA* under the *DynaServer* project.
 Then, it became part of the [OW2 JMOB](http://jmob.ow2.org) where it is currently available at [this page](http://jmob.ow2.org/rubbos.html).
 The last release of the OW2 RUBBoS is version 1.2.2, which dates back to October 2004 (see [here](http://forge.ow2.org/projects/rubbos/rubbos/)).
 
