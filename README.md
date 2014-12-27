@@ -45,6 +45,7 @@ In the following, we assume that you use the *Apache Web server* and that a work
 
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
+    $ export RUBBOS_HOME=$PWD/RUBBoS
     ```
 
 3. Copy the PHP sources to the *server root* directory `$SERVER_ROOT` of your Web server (e.g., `$SERVER_ROOT` may be `/var/www`):
@@ -91,6 +92,7 @@ In the following, we assume that you use the *Apache Tomcat* J2EE container and 
 
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
+    $ export RUBBOS_HOME=$PWD/RUBBoS
     $ cd RUBBoS/servlets
     ```
 
@@ -134,12 +136,13 @@ In the following guide, we asssume you use the MySQL server as the DBMS server.
 
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
+    $ export RUBBOS_HOME=$PWD/RUBBoS
     ```
 
 3. Create the `rubbos` database schema and populate with minimal data:
 
     ```shell
-    $ cd RUBBoS
+    $ cd $RUBBOS_HOME
     $ mysql -uroot rubbos < database/rubbos.sql
     $ mysql -uroot rubbos < database/test.sql
     ```
@@ -147,6 +150,11 @@ In the following guide, we asssume you use the MySQL server as the DBMS server.
 ### Client Installation
 
 By *client*, we mean the component that submits the workload to the RUBBoS application.
+You need to repeat this installation step for each remote client you want to run the workload against the RUBBoS application.
+One of this client machine will be the *master client*, that is the client that will coordinate the other ones.
+Each remote client will require installations of *Java JRE* and of the *sysstat* application.
+Also, each remote client must be accessible from the master client by means of either RSH or SSH.
+In the last case, you need to copy the SSH public key of the master client to each of the other remote client to avoid to be asked for a password on connection.
 
 1. Login to your client machine:
 
@@ -154,18 +162,91 @@ By *client*, we mean the component that submits the workload to the RUBBoS appli
 
     ```shell
     $ git clone https://github.com/sguazt/RUBBoS.git
+    $ export RUBBOS_HOME=$PWD/RUBBoS
     ```
 
 3. Compile the client code to get the jar file:
 
     ```shell
-    $ cd RUBBoS/client
+    $ cd $RUBBOS_HOME/client
     $ ant clean dist
     ```
 
    In case of no error, you can find the jar file in `./dist/rubbos_client.jar`.
 
-## Installation
+4. Compile the utility to flush the cache:
+
+    ```shell
+    $ cd $RUBBOS_HOME/client
+    $ make flush_cache
+    ```
+
+## Database Initialization
+
+There are two possible ways to populate the RUBBoS database.
+In the following guide, we asssume you use the MySQL server as the DBMS server.
+
+1. Login to your DBMS machine.
+
+2. Download one of the following database dump files from the [OW2 Consortium](http://www.ow2.org) Web site:
+  - *Small DB*
+
+        ```shell
+        $ cd $RUBBOS_HOME/database
+        $ wget http://download.forge.ow2.org/rubbos/smallDB-rubbos.tgz
+        ```
+
+  - *Expanded data set*
+
+        ```shell
+        $ cd $RUBBOS_HOME/database
+        $ wget http://download.forge.ow2.org/rubbos/rubbos-expanded-dataset.tar.bz2
+        ```
+
+3. Once you have uncompressed the downloaded file, populate the database with one of the following command:
+  1. For older versions of MySQL, use the `load.sql` file (before of using it you need to update the path to data files inside it):
+
+        ```shell
+        $ mysql -uroot rubbos < load.sql
+        ```
+
+  2. For recent versions of MySQL, use the `mysqlimport` command (suggested method):
+
+      ```shell
+      $ mysqlimport -uroot \
+                    --local \
+                    --verbose \
+                    --delete \
+                    --fields-terminated-by="\\t" \
+                    rubbos \
+                    ./users.data \
+                    ./stories.data \
+                    ./comments.data \
+                    ./old_stories.data \
+                    ./old_comments.data \
+                    ./submissions.data \
+                    ./moderator_log.data
+      ```
+
+## Client Execution
+
+1. Login to your master client machine:
+
+2. Setup the workload files by editing each of `$RUBBOS_HOME/bench/rubbos_properties_*` file for your configuration.
+   The simplest way to change the amount of load generated is to change the number of remote clients as well as `workload_number_of_clients_per_node`.
+   You can also setup the type of connection (e.g., SSH or RSH).
+   Finally, `workload_user_transition_table` and `workload_author_transition_table` can be set to the defaults found in the `workload` subdirectory.
+
+3. Run the client emulator:
+
+    ```shell
+    $ cd $RUBBOS_HOME
+    $ java -Xmx256m -Xms128m -server -classpath .:client/dist/rubbos_client.jar edu.rice.rubbos.client.ClientEmulator 
+    ```
+
+4. After the execution, you can plot some graphs of the collected data.
+   To produce these graphs of the data, the master client will require the *gnuplot* program.
+
 
 ## Credits and Disclaimer
 
