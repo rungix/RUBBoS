@@ -144,7 +144,7 @@ public class UserSession extends Thread
       return null;
 
     // Look for any image to download
-    Vector images = new Vector();
+    Vector<String> images = new Vector<String>();
     int index = HTMLReply.indexOf("<IMG SRC=\"");
     while (index != -1)
     {
@@ -158,7 +158,7 @@ public class UserSession extends Thread
     byte[] buffer = new byte[4096];
     while (images.size() > 0)
     {
-      URL imageURL = urlGen.genericHTMLFile((String)images.elementAt(0));
+      URL imageURL = urlGen.genericHTMLFile(images.elementAt(0));
       try
       {
         BufferedInputStream inImage = new BufferedInputStream(imageURL.openStream(), 4096);
