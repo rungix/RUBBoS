@@ -70,7 +70,7 @@
         packagenames="edu.rice.rubbos.*"
         sourcepath="${java.path}"
         defaultexcludes="yes"
-        destdir="${docs.path}/docs/api"
+        destdir="${docs.path}/api"
         author="true"
         version="true"
         use="true"
@@ -81,7 +81,7 @@
   </target>
 
   <!--
-           === "build" Target ===
+    === "build" Target ===
   -->
   <target name="build"
       depends="post-compile"
@@ -94,7 +94,7 @@
   </target>
 
   <!--
-           === "post-compile" Target ===
+    === "post-compile" Target ===
   -->
   <target name="post-compile"
       depends="compile"
@@ -103,7 +103,7 @@
   </target>
 
   <!--
-           === "compile" Target ===
+    === "compile" Target ===
   -->
   <target name="compile"
       depends="pre-compile"
@@ -116,6 +116,8 @@
         debug="${compile.debug}"
         deprecation="${compile.deprecation}"
         optimize="${compile.optimize}">
+      <classpath refid="compile.classpath"/>
+      <compilerarg value="-Xlint:unchecked"/>
     </javac>
     <!-- Copy application resources -->
     <copy  todir="${build.path}/WEB-INF/classes">
@@ -124,7 +126,7 @@
   </target>
 
   <!--
-           === "pre-compile" Target ===
+    === "pre-compile" Target ===
   -->
   <target name="pre-compile">
     <!-- Create build directories as needed -->
