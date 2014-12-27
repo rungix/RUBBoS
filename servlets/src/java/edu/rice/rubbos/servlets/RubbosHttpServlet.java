@@ -50,7 +50,7 @@ public abstract class RubbosHttpServlet extends HttpServlet
   /** Controls connection pooling */
     private static final boolean enablePooling = true;
   /** Stack of available connections (pool) */
-  private Stack freeConnections = null;
+  private Stack<Connection> freeConnections = null;
   private int poolSize;
   private int currentConn = 0;
   private Properties dbProperties = null;
@@ -71,7 +71,7 @@ public abstract class RubbosHttpServlet extends HttpServlet
       // load the driver
       Class.forName(dbProperties.getProperty("datasource.classname"));
 
-      freeConnections = new Stack();
+      freeConnections = new Stack<Connection>();
       initializeConnections();
     }
     catch (FileNotFoundException f)
@@ -190,7 +190,7 @@ public abstract class RubbosHttpServlet extends HttpServlet
           }
         }
 
-        Connection c = (Connection) freeConnections.pop();
+        Connection c = freeConnections.pop();
         return c;
       }
 
@@ -250,7 +250,7 @@ public abstract class RubbosHttpServlet extends HttpServlet
       Connection c = null;
       while (!freeConnections.isEmpty())
       {
-        c = (Connection) freeConnections.pop();
+        c = freeConnections.pop();
         c.close();
       }
     }
