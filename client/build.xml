@@ -65,14 +65,5 @@
        fork="yes"/>
   </target>
 
-  <!-- init db -->
-  <target name="initDB" depends="init, compile">
-     <java classname="edu.rice.rubbos.client.InitDB"
-       classpath="${build.path}/:.:../database"
-       fork="yes">
-          <arg value="${initDB.param}"/> 
-     </java>
-  </target>
-
 </project>
 
