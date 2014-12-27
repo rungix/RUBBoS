@@ -58,12 +58,5 @@
     <delete dir="${dist.path}"/>
   </target>
 
-  <!-- run the client -->
-  <target name="emulator" depends="init, compile">
-     <java classname="edu.rice.rubbos.client.ClientEmulator"
-       classpath="${build.path}"
-       fork="yes"/>
-  </target>
-
 </project>
 
