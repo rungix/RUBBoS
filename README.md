@@ -81,7 +81,7 @@ In the following, we assume that you use the *Apache Web server* and that a work
 
 7. Reboot
 
-### Java Servlets Incarnation
+#### Java Servlets Incarnation
 
 In the following, we assume that you use the *Apache Tomcat* J2EE container and that a working installation is already installed on your system.
 
@@ -117,6 +117,8 @@ In the following, we assume that you use the *Apache Tomcat* J2EE container and 
     $ ant clean build
     ```
 
+   In case of no error, you can find the war file in `./dist/rubbos.war`.
+
 5. Deploy the `rubbos.war` war into your J2EE container (e.g., in case of Apache Tomcat, copy `dist/rubbos.war` into the `webapps` sub-directory located under the Apache Tomcat root directory, like `/usr/share/tomcat/webapps`).
 
 6. Restart your J2EE container.
@@ -134,12 +136,36 @@ In the following guide, we asssume you use the MySQL server as the DBMS server.
     $ git clone https://github.com/sguazt/RUBBoS.git
     ```
 
-3. Create the `rubbos` database schema
+3. Create the `rubbos` database schema and populate with minimal data:
 
     ```shell
     $ cd RUBBoS
     $ mysql -uroot rubbos < database/rubbos.sql
+    $ mysql -uroot rubbos < database/test.sql
     ```
+
+### Client Installation
+
+By *client*, we mean the component that submits the workload to the RUBBoS application.
+
+1. Login to your client machine:
+
+2. Get the RUBBoS project:
+
+    ```shell
+    $ git clone https://github.com/sguazt/RUBBoS.git
+    ```
+
+3. Compile the client code to get the jar file:
+
+    ```shell
+    $ cd RUBBoS/client
+    $ ant clean dist
+    ```
+
+   In case of no error, you can find the jar file in `./dist/rubbos_client.jar`.
+
+## Installation
 
 ## Credits and Disclaimer
 
