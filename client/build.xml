@@ -32,7 +32,7 @@
   <target name="dist" depends="init, compile">
     <jar destfile="${dist.path}/rubbos_client.jar">
       <fileset dir="${build.path}"
-        includes="edu/rice/rubbos/client/**/*.class"/>
+        includes="edu/rice/rubbos/client/**/*.class, edu/rice/rubbos/beans/**/*.class"/>
     </jar>
   </target>
 
