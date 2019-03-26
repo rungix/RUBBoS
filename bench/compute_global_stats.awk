@@ -46,7 +46,7 @@ BEGIN {
 	  # Display the total
 	  if (stateNb == 0)
 	    stateNb = 1000000000000000000000000; # make stateNb infinite so that division result will give 0.
-	  printf "<TR><TD><div align=left><B>Total</div></B><TD><div align=right><B>100 %</B></div><TD><div align=right><B>%d</B></div><TD><div align=right><B>%d</B></div><TD><div align=center>-</div><TD><div align=center>-</div><TD><div align=right><B>%.0f ms</B></div>", totalCount, totalErrors, totalTime/totalCount >> outputFile;
+	  printf "<TR><TD><div align=left><B>Tota</B>l</div><TD><div align=right><B>100 %</B></div><TD><div align=right><B>%d</B></div><TD><div align=right><B>%d</B></div><TD><div align=center>-</div><TD><div align=center>-</div><TD><div align=right><B>%.0f ms</B></div>", totalCount, totalErrors, totalTime/totalCount >> outputFile;
 	}
       else if ($0 ~ "<TR><TD><div align=left><B>Average throughput</div>")
 	{ # Average throughput
