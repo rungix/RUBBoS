@@ -241,7 +241,7 @@ In the following guide, we asssume you use the MySQL server as the DBMS server.
 
     ```shell
     $ cd $RUBBOS_HOME
-    $ java -Xmx256m -Xms128m -server -classpath .:client/dist/rubbos_client.jar edu.rice.rubbos.client.ClientEmulator 
+    $ java -Xmx256m -Xms128m -server -classpath .:client:client/dist/rubbos_client.jar edu.rice.rubbos.client.ClientEmulator 
     ```
 
 4. After the execution, you can plot some graphs of the collected data.
