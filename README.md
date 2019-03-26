@@ -178,7 +178,7 @@ In the last case, you need to copy the SSH public key of the master client to ea
 
     ```shell
     $ cd $RUBBOS_HOME/client
-    $ make flush_cache
+    $ gcc bench/flush_cache.c -o bench/flush_cache 
     ```
 
 ## Database Initialization
