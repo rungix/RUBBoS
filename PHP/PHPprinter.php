@@ -63,7 +63,7 @@ function authenticate($nickname, $password, $link)
 {
   $result = mysql_query("SELECT id FROM users WHERE nickname=\"$nickname\" AND password=\"$password\"", $link);
   if (!$result) {
-      er r or_log(" [ ".__FILE__."] Authentification query 'SELECT id FROM users WHERE nickname=\"$nickname\" AND password=\"$password\"' failed: " . mysql_error($link));
+      error_log("[".__FILE__."] Authentification query 'SELECT id FROM users WHERE nickname=\"$nickname\" AND password=\"$password\"' failed: ".mysql_error($link));
       die("ERROR: Authentification query failed for nickname '$nickname': " . mysql_error($link));
     }
   if (mysql_num_rows($result) == 0)
@@ -77,7 +77,7 @@ function getUserName($uid, $link)
 {
   $user_query = mysql_query("SELECT nickname FROM users WHERE id=$uid", $link);
   if (!$user_query) {
-      er r or_log(" [ ".__FILE__."] getUserName query 'SELECT nickname FROM users WHERE id=$uid' failed: " . mysql_error($link));
+      error_log(" [ ".__FILE__."] getUserName query 'SELECT nickname FROM users WHERE id=$uid' failed: " . mysql_error($link));
       die("ERROR: getUserName query failed for user '$uid': " . mysql_error($link));
     }
   $user_row = mysql_fetch_array($user_query);
@@ -85,7 +85,7 @@ function getUserName($uid, $link)
 }
 
 
-function getSessionPostGetParam($n a me, $value=null)
+function getSessionPostGetParam($name, $value=null)
 {
   if (isset($_POST[$name])) {
       return $_POST[$name];
@@ -98,7 +98,7 @@ function getSessionPostGetParam($n a me, $value=null)
 }
 
 
-function getSessionGetPostParam($n a me, $value=null)
+function getSessionGetPostParam($name, $value=null)
 {
   if (isset($_GET[$name])) {
       return $_GET[$name];
@@ -125,5 +125,5 @@ function commit($link)
 
 function rollback($link)
 {
-  mysql_query("ROLLBACK", $l ink);
+  mysql_query("ROLLBACK", $link);
 }
