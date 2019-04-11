@@ -10,7 +10,7 @@ import java.io.PrintStream;
 import java.lang.Runtime;
 import java.util.GregorianCalendar;
 import java.util.Random;
-
+import java.util.Arrays;
 /**
  * RUBBoS client emulator. 
  * This class plays random user sessions emulating a Web browser.
@@ -110,6 +110,8 @@ public class ClientEmulator
     String            tmpDir = "/tmp/";
     boolean           isMainClient = args.length == 0; // Check if we are the main client
 
+    System.out.println("isMainClient: " + isMainClient);
+
     if (isMainClient)
     { 
       // Start by creating a report directory and redirecting output to an index.html file
@@ -130,7 +132,7 @@ public class ClientEmulator
           reportDir = dir.getCanonicalPath()+"/";
         System.out.println("Redirecting output to '"+reportDir+"index.html'");
         PrintStream outputStream = new PrintStream(new FileOutputStream(reportDir+"index.html"));
-        System.out.println("Please wait while experiment is running ...");
+        System.out.println("MainClient: Please wait while experiment is running ...");
         System.setOut(outputStream);
         System.setErr(outputStream);
       }
@@ -222,6 +224,7 @@ public class ClientEmulator
           delProcess = Runtime.getRuntime().exec(delFiles);
           delProcess.waitFor();
           // Remote clients
+          System.out.println("&nbsp &nbsp Remote clients size: "+client.rubbos.getRemoteClients().size()+"<br>\n");
           for (int i = 0 ; i < client.rubbos.getRemoteClients().size() ; i++)
           {
             delFiles[2] =  (String)client.rubbos.getRemoteClients().get(i);
@@ -273,6 +276,7 @@ public class ClientEmulator
 
         remoteClientMonitor = new Process[client.rubbos.getRemoteClients().size()];
         // Monitor remote clients
+        System.out.println("&nbsp &nbsp Remote clients size: "+client.rubbos.getRemoteClients().size()+"<br>\n");
         for (int i = 0 ; i < client.rubbos.getRemoteClients().size() ; i++)
         {
           System.out.println("ClientEmulator: Starting monitoring program locally on client<br>\n");
@@ -298,11 +302,11 @@ public class ClientEmulator
     }
     else
     { // Redirect output of remote clients
-      System.out.println("Redirecting output to '"+args[0]+"'");
+      System.out.println("Not MainClient, Redirecting output to '"+args[0]+"'");
       try
       {
         PrintStream outputStream = new PrintStream(new FileOutputStream(args[0]));
-        System.out.println("Please wait while experiment is running ...");
+        System.out.println("Remote clients: Please wait while experiment is running ...");
         System.setOut(outputStream);
         System.setErr(outputStream);
       }
@@ -577,6 +581,7 @@ public class ClientEmulator
     if (isMainClient)
     {
       // Wait for end of all monitors and remote clients
+      System.out.println("Main Client waiting...<br>");
       try
       {
         for (int i = 0 ; i < client.rubbos.getRemoteClients().size() ; i++)
@@ -591,16 +596,19 @@ public class ClientEmulator
             remoteClient[i].waitFor();
           }
         }
+        System.out.println("Main Client waitfor webServerMonitor...<br>");
         webServerMonitor.waitFor();
+        System.out.println("Main Client waitfor dbServerMonitor...<br>");
         dbServerMonitor.waitFor();
+        System.out.println("Main Client wake...<br>");
       }
-
       catch (Exception e)
       {
         System.out.println("An error occured while waiting for remote processes termination ("+e.getMessage()+")");
       }
 
       // scp the sar log files over at this point
+      System.out.println("Scp sar files...<br>");
       try
       {
         String [] scpCmd = new String[3];
@@ -614,10 +622,12 @@ public class ClientEmulator
           p.waitFor();
         }
         scpCmd[1] =  client.rubbos.getWebServerName() + ":"+tmpDir+"/web_server";
+        System.out.println("webserver: " + Arrays.toString(scpCmd) + "<br>");
         p = Runtime.getRuntime().exec(scpCmd);
         p.waitFor();
 
         scpCmd[1] =  client.rubbos.getDBServerName() + ":"+tmpDir+"/db_server";
+        System.out.println("dbserver: " + Arrays.toString(scpCmd) + "<br>");
         p = Runtime.getRuntime().exec(scpCmd);
         p.waitFor();
         // Fetch html files created by the remote clients
@@ -638,6 +648,7 @@ public class ClientEmulator
         System.out.println("An error occured while scping the files over ("+e.getMessage()+")");
       }
  
+      System.out.println("Call generate_graphs...<br>");
       // Time to go and convert the binary files into something that generate_graphs.sh can understand
       try
       {
@@ -645,16 +656,19 @@ public class ClientEmulator
         Process p;
         // Web server
         cmd = "mv "+reportDir+"/"+"web_server "+reportDir+"/"+"web_server.bin";
+        System.out.println("webserver: " + cmd + "<br>");
         p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
 
         // Database Server
         cmd = "mv "+reportDir+"/"+"db_server "+reportDir+"/"+"db_server.bin";
+        System.out.println("dbserver: " + cmd + "<br>");
         p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
 
         // Localhost
         cmd = "mv "+reportDir+"/"+"client0 "+reportDir+"/"+"client0.bin";
+        System.out.println("localhost: " + cmd + "<br>");
         p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
         
@@ -704,6 +718,7 @@ public class ClientEmulator
         System.out.println("An error occured while convering log files ("+e.getMessage()+")");
       }
 
+      System.out.println("Generating graphics..." + "<br>");
       // Generate the graphics 
       try
       {
@@ -712,6 +727,7 @@ public class ClientEmulator
         cmd[1] = reportDir;
         cmd[2] = client.rubbos.getGnuPlotTerminal();
         cmd[3] = Integer.toString(client.rubbos.getRemoteClients().size()+1);
+        System.out.println("generating graphics cmd: " + Arrays.toString(cmd) + "<br>");
         Process graph = Runtime.getRuntime().exec(cmd);
         // Need to read input so program does not stall.
         BufferedReader read = new BufferedReader(new InputStreamReader(graph.getInputStream()));
@@ -776,6 +792,7 @@ public class ClientEmulator
         cmd[3] = "-v";
         cmd[4] = "nbscript="+Integer.toString(client.rubbos.getRemoteClients().size()+1);
         cmd[5] = reportDir+"stat_client0.html";
+        System.out.println("call compute_global_stats.awk: " + Arrays.toString(cmd) + "<br>");
         Process computeStats = Runtime.getRuntime().exec(cmd);	
         // Need to read input so program does not stall.
         BufferedReader read = new BufferedReader(new InputStreamReader(computeStats.getInputStream()));

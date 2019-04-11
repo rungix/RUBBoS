@@ -1,4 +1,4 @@
-#!/bin/awk -f
+#!/usr/bin/awk -f
 
 BEGIN {
   # It is not possible to define output file names here because
