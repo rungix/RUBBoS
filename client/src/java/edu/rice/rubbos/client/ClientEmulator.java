@@ -231,12 +231,12 @@ public class ClientEmulator {
         cmdWeb[0] = client.rubbos.getMonitoringRsh();
         cmdWeb[1] = "-x";
         cmdWeb[2] = client.rubbos.getWebServerName();
-        cmdWeb[3] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
+        cmdWeb[3] = "env LC_TIME=en_UK.utf8";
+        cmdWeb[4] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
             + client.rubbos.getMonitoringSampling() + " " + fullTimeInSec + " -o " + tmpDir + "web_server";
-        cmdWeb[4] = "&& echo done";
         webServerMonitor = Runtime.getRuntime().exec(cmdWeb);
         System.out.println(
-            "&nbsp &nbsp Command is: " + cmdWeb[0] + " " + cmdWeb[1] + " " + cmdWeb[2] + " " + cmdWeb[3] + "<br>\n");
+            "&nbsp &nbsp Command is: " + cmdWeb[0] + " " + cmdWeb[1] + " " + cmdWeb[2] + " " + cmdWeb[3] + " " + cmdWeb[4] + "<br>\n");
 
         // Monitor Database server
         System.out.println("ClientEmulator: Starting monitoring program on Database server "
@@ -245,12 +245,12 @@ public class ClientEmulator {
         cmdDB[0] = client.rubbos.getMonitoringRsh();
         cmdDB[1] = "-x";
         cmdDB[2] = client.rubbos.getDBServerName();
-        cmdDB[3] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
+        cmdDB[3] = "env LC_TIME=en_UK.utf8";
+        cmdDB[4] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
             + client.rubbos.getMonitoringSampling() + " " + fullTimeInSec + " -o " + tmpDir + "db_server";
-        cmdDB[4] = "&& echo done";
         dbServerMonitor = Runtime.getRuntime().exec(cmdDB);
         System.out.println(
-            "&nbsp &nbsp Command is: " + cmdDB[0] + " " + cmdDB[1] + " " + cmdDB[2] + " " + cmdDB[3] + "<br>\n");
+            "&nbsp &nbsp Command is: " + cmdDB[0] + " " + cmdDB[1] + " " + cmdDB[2] + " " + cmdDB[3] + " " + cmdDB[4] + "<br>\n");
 
         // Monitor local client
         System.out.println("ClientEmulator: Starting monitoring program locally on client<br>\n");
@@ -258,12 +258,12 @@ public class ClientEmulator {
         cmdClient[0] = client.rubbos.getMonitoringRsh();
         cmdClient[1] = "-x";
         cmdClient[2] = "localhost";
-        cmdClient[3] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
+        cmdClient[3] = "env LC_TIME=en_UK.utf8";        
+        cmdClient[4] = client.rubbos.getMonitoringProgram() + " " + client.rubbos.getMonitoringOptions() + " "
             + client.rubbos.getMonitoringSampling() + " " + fullTimeInSec + " -o " + reportDir + "client0";
-        cmdClient[4] = "&& echo done";
         clientMonitor = Runtime.getRuntime().exec(cmdClient);
         System.out.println("&nbsp &nbsp Command is: " + cmdClient[0] + " " + cmdClient[1] + " " + cmdClient[2] + " "
-            + cmdClient[3] + "<br>\n");
+            + cmdClient[3]  + " " + cmdClient[4] + "<br>\n");
 
         remoteClientMonitor = new Process[client.rubbos.getRemoteClients().size()];
         // Monitor remote clients
@@ -639,7 +639,7 @@ public class ClientEmulator {
         String[] convCmd = new String[6];
         int fullTimeInSec = (client.rubbos.getUpRampTime() + client.rubbos.getSessionTime()
             + client.rubbos.getDownRampTime()) / 1000 + 5; // Give 5 seconds extra for init
-        String common = "'LANG=en_GB.UTF-8 " + client.rubbos.getMonitoringProgram() + " "
+        String common = "'LC_TIME=en_GB.UTF-8 " + client.rubbos.getMonitoringProgram() + " "
             + client.rubbos.getMonitoringOptions() + " " + client.rubbos.getMonitoringSampling() + " " + fullTimeInSec
             + " -f " + reportDir;
         convCmd[0] = client.rubbos.getMonitoringRsh();
